@@ -1,5 +1,5 @@
 # Statistical-Analysis-Covid-19
-A Python 3 program which reads data from a csv file provided and returns different analytical results of the COVID-19 cases for the entire world. Works by using a dictionary filled with smaller dictionaries, which hold information like lists of total positive cases for each month and total recorded deaths for each month etc . Complete project description provided.
+A Python 3 program which reads data from a csv file provided and returns different analytical results of the COVID-19 cases for the entire world. Works by using a dictionary filled with smaller dictionaries, which hold information like lists of total positive cases for each month and total recorded deaths for each month etc . Complete project description provided.   
 To run:        
 python3 Project2.py. 
   
