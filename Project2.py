@@ -1,4 +1,4 @@
-"""22241944.py
+"""Project2.py
 A program to conduct a statistical analysis on COVID-19 cases
 by: Elisha Anstiss """
 def main(csvfile):
@@ -6,7 +6,7 @@ def main(csvfile):
         print("Invalid input")
         return None
     try:
-        infile= open(csvfile, "r") 
+        infile= open(csvfile, "r", encoding='latin-1')
     except FileNotFoundError: 
         print("The file", csvfile ,"was not found.") 
         return None
@@ -21,7 +21,7 @@ def main(csvfile):
     for line in filelines[1:-1]: #-1 removes last index out of range
         values = line.split(",")
         data.append(values)
-    
+   
     headers = {} 
     for (key,value) in enumerate(filelines[0].split(',')): #goes through headers and keeps index
         headers[value] = key #make dictionary of header strings and their index point
@@ -36,9 +36,12 @@ def main(csvfile):
     continentlist = [] #create list of all continents
     for line in data:
         continentlist.append(line[headers["continent"]].lower()) #test cases keeps continent
-        countrylist.append(line[headers["location"]].lower()) #assuming we want world country included
+        #uncomment  next section to ensure world country not included
+        #if len(line[1]) < 1:
+            #continue 
+        countrylist.append(line[headers["location"]].lower())
         
-    countrylist = set([i for i in (countrylist)]) #set removes duplicate countries
+    countrylist = set([i for i in (countrylist) if i != '']) #set removes duplicate countries
     continentlist = set((continentlist)) #remove duplicate continents, keep testing answer ''
     
     dict_country = {} #create dictionary with country as keys and value as answers
@@ -54,7 +57,8 @@ def main(csvfile):
     return dict_country, dict_continent
 
 def getnums(specificname, category, data, headers):
-    """does required calculations for specific country/continent and appends them into a dictionary"""
+    """Gets the specific lines of data for each specific country or continent,
+    does required calculations and appends them into a dictionary"""
     L = {} #dictionary of lines within data
     D = {} #months dictionary containing L's lines of (cases, deaths)
   
@@ -68,11 +72,11 @@ def getnums(specificname, category, data, headers):
             case = line[headers["new_cases"]]
             death = line[headers["new_deaths"]]
             
-            if str(case).isnumeric() == False or case == '' or int(case) <  0: 
+            if str(case).isnumeric() == False or case == '': 
                 L["case"] = 0 #all non-numeric data or no data should be considered as 0
             else:
                 L["case"] = int(case)         
-            if str(death).isnumeric()== False or death == '' or int(death) < 0: 
+            if str(death).isnumeric()== False or death == '': 
                 L["death"] = 0
             else:
                 L["death"] = int(death)
@@ -90,7 +94,7 @@ def getnums(specificname, category, data, headers):
         days_dict[2] = 29
        
     for i in range(1,13):
-            if i not in D.keys(): #if month doesn't exist in dictionary make it hold [0]
+            if i not in D.keys(): #if month doesn't exist in dictionary make it 0
                 D[i] = [0]
             else:
                 sumcase = sum(D[i]["case"])
@@ -103,19 +107,22 @@ def getnums(specificname, category, data, headers):
                         D[i]["case"].append(0)
                     for days in range(days_dict[i]-len(D[i]["death"])):
                         D[i]["death"].append(0) #add zeros for missing days
-    
-                try:
-                    avgcases =  sumcase/len(D[i]['case']) #if list=[0] ensure avg
-                except ZeroDivisionError:
-                    avgcases = 0
-                try:
-                    avgdeaths = sumdeath/len(D[i]['death'])
-                except ZeroDivisionError:
-                    avgdeaths = 0 #if list=[0] ensure avg 0
+                
+                avgcases =  sumcase/len(D[i]['case'])
+                avgdeaths = sumdeath/len(D[i]['death'])
                 
                 greatercases = len([x for x in D[i]["case"] if x > avgcases]) #for each month, for each day
                 greaterdeaths = len([i for i in D[i]["death"] if i > avgdeaths])
                 D.setdefault("daysgt_case", []).append(greatercases)
                 D.setdefault("daysgt_death", []).append(greaterdeaths)
-    
     return D["sum_case"], D["sum_death"], D["daysgt_case"], D["daysgt_death"]#return only required lists
+
+if __name__ == "__main__":
+    dict_country,dict_continent = main('Trying.csv')
+    requested = input("Enter a country or continent name:")
+    if requested in dict_country.keys():
+        print(dict_country[requested],"\n")
+    elif requested in dict_continent.keys():
+        print(dict_continent[requested])
+    else:
+        print("Country/Continent could not be found!\n Please choose a country from this list:\n", dict_country.keys(), "\nOr try a Continent from this list:\n", dict_continent.keys())
