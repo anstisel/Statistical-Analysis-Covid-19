@@ -118,7 +118,7 @@ def getnums(specificname, category, data, headers):
     return D["sum_case"], D["sum_death"], D["daysgt_case"], D["daysgt_death"]#return only required lists
 
 if __name__ == "__main__":
-    dict_country,dict_continent = main('Trying.csv')
+    dict_country,dict_continent = main('Covid-data.csv')
     requested = input("Enter a country or continent name:")
     if requested in dict_country.keys():
         print(dict_country[requested],"\n")
